@@ -8,7 +8,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { Animated, ScrollView, Platform, StyleSheet, View } from 'react-native';
 
 import ActionSheet from '@expo/react-native-action-sheet';
 import moment from 'moment';
@@ -302,12 +302,16 @@ class GiftedChat extends React.Component {
   }
 
 
-  renderMessages() {
+  renderMessages(children, isChildren) {
     const AnimatedView = this.props.isAnimated === true ? Animated.View : View;
     return (
+      <ScrollView>
+     
+            {children}
+
       <AnimatedView
         style={{
-          height: this.state.messagesContainerHeight,
+          height: isChildren ? this.state.messagesContainerHeight - 300: this.state.messagesContainerHeight,
         }}
       >
         <MessageContainer
@@ -319,6 +323,7 @@ class GiftedChat extends React.Component {
         />
         {this.renderChatFooter()}
       </AnimatedView>
+      </ScrollView>
     );
   }
 
@@ -472,12 +477,13 @@ class GiftedChat extends React.Component {
     return null;
   }
 
+
   render() {
     if (this.state.isInitialized === true) {
       return (
         <ActionSheet ref={(component) => (this._actionSheetRef = component)}>
           <View style={styles.container} onLayout={this.onMainViewLayout}>
-            {this.renderMessages()}
+            {this.renderMessages(this.props.children, this.props.isChildren)}
             {this.renderInputToolbar()}
           </View>
         </ActionSheet>
