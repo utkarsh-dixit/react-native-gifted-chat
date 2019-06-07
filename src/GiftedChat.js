@@ -8,7 +8,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, ScrollView, Platform, StyleSheet, View } from 'react-native';
+import { Animated, ScrollView, Platform, StyleSheet, View, Text } from 'react-native';
 
 import ActionSheet from '@expo/react-native-action-sheet';
 import moment from 'moment';
@@ -70,6 +70,7 @@ class GiftedChat extends React.Component {
     this.onInputTextChanged = this.onInputTextChanged.bind(this);
     this.onMainViewLayout = this.onMainViewLayout.bind(this);
     this.onInitialLayoutViewLayout = this.onInitialLayoutViewLayout.bind(this);
+    this.scrollView = null;
 
     this.invertibleScrollViewProps = {
       inverted: this.props.inverted,
@@ -299,21 +300,26 @@ class GiftedChat extends React.Component {
       return;
     }
     this._messageContainerRef.scrollTo({ y: 0, animated });
+    if(this.scrollView)
+    this.scrollView.scrollToEnd({ animated: true }); 
   }
 
 
   renderMessages(children, isChildren) {
     const AnimatedView = this.props.isAnimated === true ? Animated.View : View;
     return (
-      <ScrollView>
-     
-            {children}
 
       <AnimatedView
         style={{
-          height: isChildren ? this.state.messagesContainerHeight - 300: this.state.messagesContainerHeight,
+          height: isChildren ? this.state.messagesContainerHeight + 300: this.state.messagesContainerHeight,
         }}
       >
+            <ScrollView   ref={(view) => {
+    this.scrollView = view;
+    this.scrollToBottom();
+  }}>
+     
+            {children}
         <MessageContainer
           {...this.props}
           invertibleScrollViewProps={this.invertibleScrollViewProps}
@@ -322,8 +328,9 @@ class GiftedChat extends React.Component {
 
         />
         {this.renderChatFooter()}
+              </ScrollView>
       </AnimatedView>
-      </ScrollView>
+
     );
   }
 
